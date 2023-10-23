@@ -1,5 +1,6 @@
 import {
   CreateEventSchema,
+  EditEventSchema,
   JoinEventSchema,
   LeaveEventSchema,
 } from "@/shared/api";
@@ -31,6 +32,8 @@ export const eventRouter = router({
       return prisma.event.findUnique({
         where: input,
         select: {
+          id: true,
+          authorId: true,
           title: true,
           description: true,
           date: true,
@@ -55,6 +58,17 @@ export const eventRouter = router({
           authorId: user.id,
           ...input,
         },
+      });
+    }),
+  edit: procedure
+    .input(EditEventSchema)
+    .use(isAuth)
+    .mutation(({ input }) => {
+      return prisma.event.update({
+        where: {
+          id: input.id,
+        },
+        data: input,
       });
     }),
   join: procedure

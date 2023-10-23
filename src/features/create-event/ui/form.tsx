@@ -1,12 +1,18 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateEventSchema } from "@/shared/api";
+import { CreateEventSchema, RouterOutput } from "@/shared/api";
+
+type EventDetailProps = NonNullable<RouterOutput["event"]["findUnique"]>;
 
 type CreateEventFormProps = {
+  initialData?: EventDetailProps;
   onSubmit: (data: CreateEventSchema) => void;
 };
 
-export const CreateEventForm = ({ onSubmit }: CreateEventFormProps) => {
+export const CreateEventForm = ({
+  initialData,
+  onSubmit,
+}: CreateEventFormProps) => {
   const {
     register,
     handleSubmit,
@@ -14,6 +20,10 @@ export const CreateEventForm = ({ onSubmit }: CreateEventFormProps) => {
   } = useForm<CreateEventSchema>({
     resolver: zodResolver(CreateEventSchema),
     mode: "onChange",
+    defaultValues: {
+      ...initialData,
+      date: new Date(initialData.date).toISOString().split("T")[0],
+    },
   });
 
   return (
